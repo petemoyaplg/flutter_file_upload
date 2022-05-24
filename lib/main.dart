@@ -48,8 +48,23 @@ class _MyHomePageState extends State<MyHomePage> {
     print('Path : ${_file!.first.path}');
     print('Name : ${_file!.first.name}');
     print('Bytes : ${_file!.first.bytes}');
-    print('Weight : ${_file!.first.size}');
+    print('Weight : ${(_file!.first.size / 1048576).toStringAsFixed(2)} Mb');
     print('Extention : ${_file!.first.extension}');
+  }
+
+  void _uploadFile() async {
+    print('Start upload');
+    Uri uri = Uri.parse('http://192.168.88.163:3005/upload');
+    var request = http.MultipartRequest('POST', uri);
+    request.files.add(
+      await http.MultipartFile.fromPath('file', _file!.first.path.toString()),
+    );
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      print('Upload');
+    } else {
+      print('Something went wront');
+    }
   }
 
   @override
@@ -67,10 +82,10 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: _openFileExplorer,
               child: const Text('Open File Explorer'),
             ),
-            const ElevatedButton(
-              onPressed: null,
-              child: Text('Upload File'),
-            )
+            ElevatedButton(
+              onPressed: _uploadFile,
+              child: const Text('Upload File'),
+            ),
           ],
         ),
       ),
