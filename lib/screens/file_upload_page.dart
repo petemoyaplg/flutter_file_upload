@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,8 @@ class _FileUploadPageState extends State<FileUploadPage> {
         await ImagePicker().pickImage(source: ImageSource.camera);
     if (pickedImage != null) {
       _image = File(pickedImage.path);
-      bool isUploaded = await _uploadImage('1', _image);
+      bool isUploaded =
+          await _uploadImage('4ce1cff2-a750-437f-a93c-72ddc161529a', _image);
       if (isUploaded) {
         print('Upload');
       } else {
@@ -36,12 +38,15 @@ class _FileUploadPageState extends State<FileUploadPage> {
   }
 
   Future<bool> _uploadImage(String userId, File userImage) async {
-    final bytes = userImage.readAsBytesSync();
-    final data = {"user_image": base64Encode(bytes), "user_id": userId};
+    Uint8List bytes = userImage.readAsBytesSync();
+    String imgToString = base64Encode(bytes);
+    print(imgToString);
+    final data = {"user_image": imgToString, "user_id": userId};
     Uri url = Uri.parse('http://192.168.88.163:3005/upload-image');
     final response = await http.post(
       url,
       body: jsonEncode(data),
+      headers: {"Content-type": "multipart/form-data"},
     );
     dynamic message = jsonDecode(response.body);
     print(message);
