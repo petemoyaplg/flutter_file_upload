@@ -1,8 +1,12 @@
 // ignore_for_file: avoid_print
 
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,6 +40,32 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<PlatformFile>? _file;
+
+  File? _image;
+
+  void _chooseImageFromCamera() async {
+    print('Choosde Image');
+    final XFile? image =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+    if (image != null) {
+      print(image.mimeType);
+      print(image.name);
+      print(image.path);
+      print(image.hashCode);
+      print(image.runtimeType);
+    }
+  }
+
+  void _uploadImage(String user_id, String user_image) async {
+    final data = {"user_image": user_image, "user_id": user_id};
+    final Uri url = 'http://192.168.88.163:3005/upload-image' as Uri;
+    final response = await http.post(
+      url,
+      body: jsonEncode(data),
+    );
+    final message = jsonDecode(response.body);
+    print(message);
+  }
 
   void _openFileExplorer() async {
     _file = (await FilePicker.platform.pickFiles(
@@ -75,18 +105,54 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('File Upload'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: _openFileExplorer,
-              child: const Text('Open File Explorer'),
-            ),
-            ElevatedButton(
-              onPressed: _uploadFile,
-              child: const Text('Upload File'),
-            ),
-          ],
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 95),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ElevatedButton(
+                onPressed: _openFileExplorer,
+                child: Row(
+                  children: const [
+                    Icon(Icons.open_in_new),
+                    Spacer(),
+                    Text('Open File Explorer'),
+                  ],
+                ),
+              ),
+              ElevatedButton(
+                onPressed: _chooseImageFromCamera,
+                child: Row(
+                  children: const [
+                    Icon(Icons.camera_alt),
+                    Spacer(),
+                    Text('Camera'),
+                  ],
+                ),
+              ),
+              ElevatedButton(
+                onPressed: null,
+                child: Row(
+                  children: const [
+                    Icon(Icons.photo_album),
+                    Spacer(),
+                    Text('Gallery'),
+                  ],
+                ),
+              ),
+              ElevatedButton(
+                onPressed: _uploadFile,
+                child: Row(
+                  children: const [
+                    Icon(Icons.upload_rounded),
+                    Spacer(),
+                    Text('Upload File'),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
