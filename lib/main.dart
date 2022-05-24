@@ -1,12 +1,9 @@
-// ignore_for_file: avoid_print
-
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_file_upload/screens/file_upload_page.dart';
+import 'package:flutter_file_upload/screens/account.dart';
+import 'package:flutter_file_upload/screens/test_upload_2.dart';
+import 'package:flutter_file_upload/screens/settings.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -39,62 +36,17 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<PlatformFile>? _file;
-
-  File? _image;
-
-  void _chooseImageFromCamera() async {
-    print('Choosde Image');
-    final XFile? image =
-        await ImagePicker().pickImage(source: ImageSource.camera);
-    if (image != null) {
-      print(image.mimeType);
-      print(image.name);
-      print(image.path);
-      print(image.hashCode);
-      print(image.runtimeType);
-    }
-  }
-
-  void _uploadImage(String user_id, String user_image) async {
-    final data = {"user_image": user_image, "user_id": user_id};
-    final Uri url = 'http://192.168.88.163:3005/upload-image' as Uri;
-    final response = await http.post(
-      url,
-      body: jsonEncode(data),
-    );
-    final message = jsonDecode(response.body);
-    print(message);
-  }
-
-  void _openFileExplorer() async {
-    _file = (await FilePicker.platform.pickFiles(
-      type: FileType.any,
-      allowMultiple: false,
-      allowedExtensions: null,
-    ))!
-        .files;
-
-    print('Path : ${_file!.first.path}');
-    print('Name : ${_file!.first.name}');
-    print('Bytes : ${_file!.first.bytes}');
-    print('Weight : ${(_file!.first.size / 1048576).toStringAsFixed(2)} Mb');
-    print('Extention : ${_file!.first.extension}');
-  }
-
-  void _uploadFile() async {
-    print('Start upload');
-    Uri uri = Uri.parse('http://192.168.88.163:3005/upload');
-    var request = http.MultipartRequest('POST', uri);
-    request.files.add(
-      await http.MultipartFile.fromPath('file', _file!.first.path.toString()),
-    );
-    var response = await request.send();
-    if (response.statusCode == 200) {
-      print('Upload');
-    } else {
-      print('Something went wront');
-    }
+  int _selectedIndex = 0;
+  final List<Widget> _pages = [
+    const FileUploadPage(),
+    const TestUpload2(),
+    const AccountScreen(),
+    const SettingScreen(),
+  ];
+  _navigateBottomBar(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   @override
@@ -104,55 +56,44 @@ class _MyHomePageState extends State<MyHomePage> {
         centerTitle: true,
         title: const Text('File Upload'),
       ),
-      body: Center(
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 95),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              ElevatedButton(
-                onPressed: _openFileExplorer,
-                child: Row(
-                  children: const [
-                    Icon(Icons.open_in_new),
-                    Spacer(),
-                    Text('Open File Explorer'),
-                  ],
-                ),
-              ),
-              ElevatedButton(
-                onPressed: _chooseImageFromCamera,
-                child: Row(
-                  children: const [
-                    Icon(Icons.camera_alt),
-                    Spacer(),
-                    Text('Camera'),
-                  ],
-                ),
-              ),
-              ElevatedButton(
-                onPressed: null,
-                child: Row(
-                  children: const [
-                    Icon(Icons.photo_album),
-                    Spacer(),
-                    Text('Gallery'),
-                  ],
-                ),
-              ),
-              ElevatedButton(
-                onPressed: _uploadFile,
-                child: Row(
-                  children: const [
-                    Icon(Icons.upload_rounded),
-                    Spacer(),
-                    Text('Upload File'),
-                  ],
-                ),
-              ),
-            ],
-          ),
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: getGoogleBottomNavBar(),
+    );
+  }
+
+  Container getGoogleBottomNavBar() {
+    return Container(
+      color: Colors.black,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+        child: GNav(
+          backgroundColor: Colors.black,
+          color: Colors.white,
+          activeColor: Colors.white,
+          tabBackgroundColor: Colors.grey.shade900,
+          padding: const EdgeInsets.all(5),
+          gap: 3,
+          onTabChange: (index) {
+            _navigateBottomBar(index);
+          },
+          tabs: const [
+            GButton(
+              icon: Icons.file_copy,
+              text: 'Test 1',
+            ),
+            GButton(
+              icon: Icons.favorite_border,
+              text: 'Test 2',
+            ),
+            GButton(
+              icon: Icons.search,
+              text: 'Test 3',
+            ),
+            GButton(
+              icon: Icons.settings,
+              text: 'Test 4',
+            ),
+          ],
         ),
       ),
     );
