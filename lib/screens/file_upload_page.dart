@@ -22,13 +22,35 @@ class _FileUploadPageState extends State<FileUploadPage> {
   late File _image;
 
   Future<void> _chooseImageFromCamera() async {
-    print('Choosde Image');
+    print('Choosde Image on camera');
     final XFile? pickedImage =
         await ImagePicker().pickImage(source: ImageSource.camera);
+    print('Image picked');
+    print('pickedImage = $pickedImage');
     if (pickedImage != null) {
       _image = File(pickedImage.path);
-      bool isUploaded =
-          await _uploadImage('4ce1cff2-a750-437f-a93c-72ddc161529a', _image);
+      // bool isUploaded =
+      //     await _uploadImage('4ce1cff2-a750-437f-a93c-72ddc161529a', _image);
+      bool isUploaded = await _uploadImage2(_image);
+      if (isUploaded) {
+        print('Upload');
+      } else {
+        print('Something went wront');
+      }
+    }
+  }
+
+  Future<void> _chooseImageFromGallery() async {
+    print('Choosde Image in the Gallery');
+    final XFile? pickedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    print('Image picked');
+    print('pickedImage = $pickedImage');
+    if (pickedImage != null) {
+      _image = File(pickedImage.path);
+      // bool isUploaded =
+      //     await _uploadImage('4ce1cff2-a750-437f-a93c-72ddc161529a', _image);
+      bool isUploaded = await _uploadImage2(_image);
       if (isUploaded) {
         print('Upload');
       } else {
@@ -41,7 +63,7 @@ class _FileUploadPageState extends State<FileUploadPage> {
     Uint8List bytes = userImage.readAsBytesSync();
     String imgToString = base64Encode(bytes);
     print(imgToString);
-    final data = {"user_image": imgToString, "user_id": userId};
+    final data = {"user_image": userImage, "user_id": userId};
     Uri url = Uri.parse('http://192.168.88.163:3005/upload-image');
     final response = await http.post(
       url,
@@ -51,8 +73,10 @@ class _FileUploadPageState extends State<FileUploadPage> {
     dynamic message = jsonDecode(response.body);
     print(message);
     if (message['status'] == 1) {
+      print(true);
       return true;
     } else {
+      print(false);
       return false;
     }
   }
@@ -70,6 +94,7 @@ class _FileUploadPageState extends State<FileUploadPage> {
     print('Bytes : ${_file!.first.bytes}');
     print('Weight : ${(_file!.first.size / 1048576).toStringAsFixed(2)} Mb');
     print('Extention : ${_file!.first.extension}');
+    print('===================================================');
   }
 
   void _uploadFile() async {
@@ -79,11 +104,37 @@ class _FileUploadPageState extends State<FileUploadPage> {
     request.files.add(
       await http.MultipartFile.fromPath('file', _file!.first.path.toString()),
     );
+    request.fields.addAll({
+      "id": '4ce1cff2-a750-437f-a93c-72ddc161529a',
+      "date": DateTime.now().toString()
+    });
     var response = await request.send();
     if (response.statusCode == 200) {
       print('Upload');
     } else {
       print('Something went wront');
+    }
+  }
+
+  Future<bool> _uploadImage2(File file) async {
+    print('Start upload');
+    Uri uri = Uri.parse('http://192.168.88.163:3005/upload');
+    var request = http.MultipartRequest('POST', uri);
+    request.files.add(
+      await http.MultipartFile.fromPath('file', file.path.toString()),
+    );
+    request.fields.addAll({
+      "id": '4ce1cff2-a750-437f-a93c-72ddc161529a',
+      "date": DateTime.now().toString()
+    });
+    print('request = $request');
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      print('Upload');
+      return true;
+    } else {
+      print('Something went wront');
+      return false;
     }
   }
 
@@ -123,7 +174,7 @@ class _FileUploadPageState extends State<FileUploadPage> {
               ),
             ),
             ElevatedButton(
-              onPressed: null,
+              onPressed: _chooseImageFromGallery,
               child: Row(
                 children: const [
                   Icon(Icons.photo_album),
