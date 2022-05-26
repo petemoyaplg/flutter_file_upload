@@ -120,12 +120,11 @@ class _FileUploadPageState extends State<FileUploadPage> {
     print('Start upload');
     Uri uri = Uri.parse('http://192.168.88.163:3005/upload');
     var request = http.MultipartRequest('POST', uri);
-    request.files.add(
-      await http.MultipartFile.fromPath('file', file.path.toString()),
-    );
+    String filePath = file.path.toString();
+    request.files.add(await http.MultipartFile.fromPath('file', filePath));
     request.fields.addAll({
-      "id": '4ce1cff2-a750-437f-a93c-72ddc161529a',
-      "date": DateTime.now().toString()
+      'id': '4ce1cff2-a750-437f-a93c-72ddc161529a',
+      'date': DateTime.now().toString()
     });
     print('request = $request');
     var response = await request.send();

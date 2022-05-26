@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_file_upload/screens/file_upload_page.dart';
 import 'package:flutter_file_upload/screens/account.dart';
-import 'package:flutter_file_upload/screens/test_upload_2.dart';
+import 'package:flutter_file_upload/screens/pdf_test.dart';
 import 'package:flutter_file_upload/screens/settings.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
@@ -39,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   final List<Widget> _pages = [
     const FileUploadPage(),
-    const TestUpload2(),
+    const PdfTest(),
     const AccountScreen(),
     const SettingScreen(),
   ];
@@ -82,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
               text: 'Test 1',
             ),
             GButton(
-              icon: Icons.favorite_border,
+              icon: Icons.picture_as_pdf,
               text: 'Test 2',
             ),
             GButton(
