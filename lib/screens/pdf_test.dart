@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -15,19 +17,61 @@ class PdfTest extends StatefulWidget {
 class _PdfTestState extends State<PdfTest> {
   pdfCreation() async {
     final pdf = pw.Document();
+    final fontData =
+        await rootBundle.load("assets/fonts/FjallaOne-Regular.ttf");
     pdf.addPage(
       pw.Page(
         build: (pw.Context context) {
           return pw.Column(
             mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
-            children: [],
+            children: [
+              pw.Container(
+                child: pw.Row(
+                  children: [
+                    pw.Column(
+                      children: [
+                        pw.Text(
+                          "INVOICE",
+                          style: const pw.TextStyle(
+                            fontSize: 36,
+                            color: PdfColor.fromInt(0xff4bc984),
+                          ),
+                        )
+                      ],
+                    ),
+                    pw.Column(
+                      children: [
+                        pw.Text(
+                          "AUTOSPEED",
+                          style: pw.TextStyle(
+                            fontSize: 36,
+                            color: const PdfColor.fromInt(0xff4bb6c9),
+                            font: pw.Font.ttf(fontData),
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              pw.Text(
+                "Hello",
+                style: const pw.TextStyle(color: PdfColors.blue400),
+              ),
+            ],
           );
         },
         pageFormat: PdfPageFormat.a4,
       ),
     );
-    final file = File('Example.pdf');
-    await file.writeAsBytes(await pdf.save());
+
+    final String dir = (await getApplicationDocumentsDirectory()).path;
+    final String path = '$dir/Example.pdf';
+    final File file = File(path);
+    // await file.writeAsBytes(await pdf.save());
+
+    // final file = File('Example.pdf');
+    file.writeAsBytesSync(await pdf.save());
   }
 
   @override
@@ -49,7 +93,9 @@ class _PdfTestState extends State<PdfTest> {
       ),
     );
 
-    final file = File('example.pdf');
+    final String dir = (await getApplicationDocumentsDirectory()).path;
+    final String path = '$dir/example.pdf';
+    final File file = File(path);
     await file.writeAsBytes(await pdf.save());
   }
 }
