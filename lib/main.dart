@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_file_upload/screens/file_upload_page.dart';
-import 'package:flutter_file_upload/screens/account.dart';
+import 'package:flutter_file_upload/screens/pdf_test2.dart';
 import 'package:flutter_file_upload/screens/pdf_test.dart';
 import 'package:flutter_file_upload/screens/settings.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -40,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<Widget> _pages = [
     const FileUploadPage(),
     const PdfTest(),
-    const AccountScreen(),
+    const PdfTest2(),
     const SettingScreen(),
   ];
   _navigateBottomBar(int index) {
@@ -86,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
               text: 'Test 2',
             ),
             GButton(
-              icon: Icons.search,
+              icon: Icons.picture_as_pdf_outlined,
               text: 'Test 3',
             ),
             GButton(

@@ -17,7 +17,6 @@ class PdfTest extends StatefulWidget {
 class _PdfTestState extends State<PdfTest> {
   final pdf = pw.Document();
   pdfCreation() async {
-    
     final fontData =
         await rootBundle.load("assets/fonts/FjallaOne-Regular.ttf");
     pdf.addPage(
@@ -87,7 +86,7 @@ class _PdfTestState extends State<PdfTest> {
   Widget build(BuildContext context) {
     pdfCreation();
     return Scaffold(
-      body: Center(child: PdfPreview(build: (format)=>pdf.save())),
+      body: Center(child: PdfPreview(build: (format) => pdf.save())),
     );
   }
 
