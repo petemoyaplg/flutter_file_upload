@@ -1,11 +1,11 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 class PdfTest extends StatefulWidget {
   const PdfTest({Key? key}) : super(key: key);
@@ -15,8 +15,9 @@ class PdfTest extends StatefulWidget {
 }
 
 class _PdfTestState extends State<PdfTest> {
+  final pdf = pw.Document();
   pdfCreation() async {
-    final pdf = pw.Document();
+    
     final fontData =
         await rootBundle.load("assets/fonts/FjallaOne-Regular.ttf");
     pdf.addPage(
@@ -64,8 +65,16 @@ class _PdfTestState extends State<PdfTest> {
         pageFormat: PdfPageFormat.a4,
       ),
     );
-
     final String dir = (await getApplicationDocumentsDirectory()).path;
+    // final image =
+    //     pw.MemoryImage(File("assets/images/ball.png").readAsBytesSync());
+    // pdf.addPage(pw.Page(
+    //   build: (pw.Context context) {
+    //     return pw.Image(image);
+    //   },
+    // ));
+
+    // final String dir = (await getApplicationDocumentsDirectory()).path;
     final String path = '$dir/Example.pdf';
     final File file = File(path);
     // await file.writeAsBytes(await pdf.save());
@@ -78,7 +87,7 @@ class _PdfTestState extends State<PdfTest> {
   Widget build(BuildContext context) {
     pdfCreation();
     return Scaffold(
-      body: Center(child: Column()),
+      body: Center(child: PdfPreview(build: (format)=>pdf.save())),
     );
   }
 

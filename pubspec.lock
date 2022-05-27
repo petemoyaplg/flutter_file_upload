@@ -324,6 +324,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2"
+  printer:
+    dependency: "direct main"
+    description:
+      name: printer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.5"
   printing:
     dependency: "direct main"
     description:
